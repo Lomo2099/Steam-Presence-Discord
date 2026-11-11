@@ -34,6 +34,7 @@ playing a local game i've set up, in this case "calculator", it's not running th
 
 ### Features
 
+* Built-in Graphical User Interface (GUI) & configuration manager with live monitoring.
 * Set Discord Rich Presence based on information fetched from steam.
 * Supports locally running applications, both games and other programs.
 * Dynamic config file reloading.
@@ -94,15 +95,86 @@ for Nix/NixOS users, see the [Nix/NixOS](#nixnixos) section at the bottom.
 
 ## GUI Control Center (Recommended)
 
-You can use the built-in Graphical User Interface (GUI) to configure `config.json`, explore all optional features, test your connection, and control the live presence.
+Steam Presence includes a modern graphical user interface (`gui.py`) that makes configuration, live monitoring, and service management easy without having to manually edit JSON files.
 
-1. **Install dependencies beforehand**:
-   ```sh
-   ./install_gui.sh
-   ```
-2. **Launch the GUI**:
-   - **Terminal**: `./launch_gui.sh`
-   - **macOS Finder**: Double-click `Steam Presence.command`
+### Highlights
+- 🛠 **Automated Pre-Installer**: One-command setup that prepares the virtual environment and installs all dependencies beforehand.
+- 🔄 **Automatic Config Detection**: Automatically detects and loads any existing `config.json` so your previous settings, API keys, and account IDs are never lost.
+- 🛡 **Safe Configuration Saving**: Writes formatted JSON and automatically creates timestamped backups (`config.json.bak`).
+- 🎨 **Adaptive High-Contrast Theming**: Includes a **Light Mode** and **Dark Mode** switcher with high-contrast text and cards so text is always 100% readable.
+- ⚡ **Live Steam Verification**: Built-in account verification button that tests your Steam API key and retrieves your Steam username and active game live.
+- 🚀 **Integrated Process Control**: Start, stop, and restart Steam Presence directly from the GUI, with a real-time, color-coded terminal log viewer.
+
+---
+
+### Installation & Launching
+
+#### 1. Run the Installer
+Run the installer script to set up the environment and install all dependencies:
+```sh
+./install_gui.sh
+```
+*The installer script checks Python & Tkinter, sets up `venv/`, upgrades pip & wheel, installs all required packages (`requests`, `pypresence`, `python-steamgriddb`, `beautifulsoup4`, `psutil`, `pillow`), validates module imports, initializes necessary data files, and creates convenient launcher scripts.*
+
+#### 2. Launch the GUI
+- **Via Terminal**:
+  ```sh
+  ./launch_gui.sh
+  ```
+- **Via macOS Finder**:
+  Double-click the `Steam Presence.command` shortcut in the repository folder.
+
+---
+
+### Tab-by-Tab Overview
+
+#### 🔑 Tab 1: Core Settings (Required)
+Essential credentials needed to bridge your Steam activity to Discord:
+* **Steam Web API Key**: Required to query Steam for your currently running game. Includes an 👁 **Show/Hide** toggle and a quick link button to the [Steam Developer API Key](https://steamcommunity.com/dev/apikey) page.
+* **Steam User ID(s)**: Your 17-digit SteamID64 (e.g. `76561198076041281`). Supports comma-separated IDs for multiple accounts. Includes a **🔍 SteamDB Calculator** link and a **⚡ Verify Account** button to test the connection live.
+* **Discord Application ID**: The Discord Client ID (prefilled with default `869994714093465680` — *"a game on steam"*). Includes a reset button.
+* **Steam Store Region**: Currency and regional code selection (`us`, `gb`, `eu`, `de`, `in`, `ca`, `au`, etc.) for store pricing.
+
+#### ⭐ Tab 2: Optional Features (Detailed & Explained)
+All optional enhancements are grouped with clear descriptions:
+1. **Fetch Steam Enhanced Rich Presence (`FETCH_STEAM_RICH_PRESENCE`)**:
+   - Pulls real-time in-game status directly from Steam (e.g., *"Browsing Menus"*, *"Battling in Elysium"*, or current map/round in supported games).
+2. **Discord Profile 'View on Steam' Button (`ADD_STEAM_STORE_BUTTON`)**:
+   - Adds a clickable button to your Discord Rich Presence card that allows friends to jump straight to the game's Steam Store page and see its current price.
+3. **Fetch Steam Community Reviews (`FETCH_STEAM_REVIEWS`)**:
+   - Queries the Steam Store to show current review ratings (e.g. *"Very Positive (88%)"*) in your Discord presence details.
+4. **Web Scraping for Non-Steam Games (`WEB_SCRAPE`)**:
+   - Detects games added to Steam as "Non-Steam Games" by scraping your Steam Community profile page. Displays live indicator if `cookies.txt` is present.
+5. **Game Overwrite Mode (`GAME_OVERWRITE`)**:
+   - Forces Steam Presence to always broadcast a custom title of your choice on Discord (e.g. *"Hollow Knight: Silksong"* or *"Working on Project"*), even when you aren't playing anything. Includes custom title and elapsed time offset inputs.
+6. **Custom Presence Icon (`CUSTOM_ICON`)**:
+   - Replaces the small default Steam logo in the bottom-right corner of the Discord presence card with your own custom image URL and hover tooltip text.
+
+#### 🎨 Tab 3: Cover Art & Local Games
+Advanced artwork and process monitoring settings:
+* **SteamGridDB Integration (`COVER_ART.STEAM_GRID_DB`)**:
+  - Automatically fetches high-resolution custom cover art and transparent logos from SteamGridDB. Includes an API key input and link to [SteamGridDB Preferences](https://www.steamgriddb.com/profile/preferences/api).
+* **Steam Store Fallback (`COVER_ART.USE_STEAM_STORE_FALLBACK`)**:
+  - Automatically falls back to downloading the official header image from the Steam Store if no icon is found elsewhere.
+* **Local Process Tracking (`LOCAL_GAMES`)**:
+  - Monitor local executable processes (e.g. emulators, standalone Minecraft, Discord, OBS) by process name. Includes an interactive process list with **+ Add**, **− Remove**, and a **⚡ Running Processes...** button that lets you pick directly from active system processes via `psutil`.
+* **Blacklist & Whitelist**:
+  - Interactive list managers to hide specific titles from Discord or restrict presence only to approved games.
+
+#### 🚀 Tab 4: Control Center & Live Logs
+Manage the background presence and monitor live status:
+* **Live Status Dashboard**:
+  - Real-time badges for process status (🔴 *Stopped* / 🟢 *Running with PID*), Steam Account persona, and currently detected game title.
+* **Service Action Controls**:
+  - **`▶ Start Presence`**: Launches `main.py` in the background with unbuffered live output.
+  - **`⏹ Stop Presence`**: Gracefully terminates the running presence process.
+  - **`🔄 Restart`**: Restarts the process to apply configuration changes immediately.
+  - **`💾 Save config.json`**: Validates inputs, saves the configuration, and creates a backup file.
+* **Live Terminal Console**:
+  - Monospaced, color-coded terminal view (cyan timestamps, green success events, red errors, blue/purple game changes) with auto-scroll and a **🧹 Clear Logs** button.
+
+---
+
 
 
 ## Setup
