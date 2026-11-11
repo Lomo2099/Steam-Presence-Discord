@@ -1,0 +1,6 @@
+python-steamgriddb
+pypresence == 4.3.0
+beautifulsoup4
+requests
+psutil
+pillow>=10.0.0
