@@ -38,7 +38,6 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "FETCH_STEAM_REVIEWS": False,
     "ADD_STEAM_STORE_BUTTON": True,
     "STEAM_STORE_REGION": "us",
-    "ENABLE_PROCESS_BRIDGE": True,
     "WEB_SCRAPE": False,
     "COVER_ART": {
         "STEAM_GRID_DB": {
@@ -306,7 +305,6 @@ class SteamPresenceGUI:
         self.var_reviews = tk.BooleanVar(value=False)
         self.var_store_button = tk.BooleanVar(value=True)
         self.var_web_scrape = tk.BooleanVar(value=False)
-        self.var_process_bridge = tk.BooleanVar(value=True)
 
         # Game Overwrite
         self.var_overwrite_enabled = tk.BooleanVar(value=False)
@@ -618,14 +616,6 @@ class SteamPresenceGUI:
         lbl_ic2.pack(side="left", padx=(0, 8))
         self.registered_labels.append((lbl_ic2, "primary"))
         self._create_entry(ic_row2, self.var_custom_icon_text).pack(side="left", fill="x", expand=True, ipady=3)
-
-        # Feature 7: Game Badges & Activity Bridge
-        self._create_feature_toggle(
-            parent,
-            title="7. Game Badges, Streaks & Playtime Tracking (ENABLE_PROCESS_BRIDGE)",
-            var=self.var_process_bridge,
-            desc="Spawns a zero-resource dummy local process for active Steam games. This allows Discord desktop to natively count playtime hours, streaks, 30-day Recent Activity history, and Discord Game Time / Game Variety Badges on your profile."
-        )
 
     # ----------------------------------------------------
     # TAB 3: COVER ART & LOCAL GAMES
@@ -1190,7 +1180,6 @@ class SteamPresenceGUI:
         self.var_reviews.set(bool(c.get("FETCH_STEAM_REVIEWS", False)))
         self.var_store_button.set(bool(c.get("ADD_STEAM_STORE_BUTTON", True)))
         self.var_web_scrape.set(bool(c.get("WEB_SCRAPE", False)))
-        self.var_process_bridge.set(bool(c.get("ENABLE_PROCESS_BRIDGE", True)))
 
         # Cover Art
         cover_art = c.get("COVER_ART", {})
@@ -1249,7 +1238,6 @@ class SteamPresenceGUI:
             "FETCH_STEAM_REVIEWS": self.var_reviews.get(),
             "ADD_STEAM_STORE_BUTTON": self.var_store_button.get(),
             "STEAM_STORE_REGION": self.var_steam_region.get().strip() or "us",
-            "ENABLE_PROCESS_BRIDGE": self.var_process_bridge.get(),
             "WEB_SCRAPE": self.var_web_scrape.get(),
             "COVER_ART": {
                 "STEAM_GRID_DB": {
@@ -1646,19 +1634,6 @@ class SteamPresenceGUI:
                     self.var_status_game.set(g_name)
             except Exception:
                 pass
-        elif "Process Bridge" in text:
-            tag = "info"
-        elif "ERROR:" in text or kind == "error":
-            tag = "error"
-        elif "success" in text.lower() or kind == "success":
-            tag = "success"
-        elif kind == "info":
-            tag = "info"
-        else:
-            tag = "info" if kind == "info" else ""
-
-        self.log_text.insert(tk.END, f"{text}\n", tag if tag else None)
-        self.log_text.see(tk.END)
 
     def _clear_logs(self):
         self.log_text.delete("1.0", tk.END)

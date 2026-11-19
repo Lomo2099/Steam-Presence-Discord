@@ -103,7 +103,6 @@ Steam Presence includes a modern graphical user interface (`gui.py`) that makes 
 - 🛡 **Safe Configuration Saving**: Writes formatted JSON and automatically creates timestamped backups (`config.json.bak`).
 - 🎨 **Adaptive High-Contrast Theming**: Includes a **Light Mode** and **Dark Mode** switcher with high-contrast text and cards so text is always 100% readable.
 - ⚡ **Live Steam Verification**: Built-in account verification button that tests your Steam API key and retrieves your Steam username and active game live.
-- 🏅 **Discord Game Badges & Activity Bridge**: Spawns a lightweight dummy process on macOS/Linux/Windows so Discord natively tracks playtime hours, streaks, 30-day Recent Activity, and Discord Game Time Badges on your profile.
 - 🚀 **Integrated Process Control**: Start, stop, and restart Steam Presence directly from the GUI, with a real-time, color-coded terminal log viewer.
 
 ---
@@ -150,10 +149,6 @@ All optional enhancements are grouped with clear descriptions:
    - Forces Steam Presence to always broadcast a custom title of your choice on Discord (e.g. *"Hollow Knight: Silksong"* or *"Working on Project"*), even when you aren't playing anything. Includes custom title and elapsed time offset inputs.
 6. **Custom Presence Icon (`CUSTOM_ICON`)**:
    - Replaces the small default Steam logo in the bottom-right corner of the Discord presence card with your own custom image URL and hover tooltip text.
-7. **Discord Game Badges, Streaks & Playtime Tracking (`ENABLE_PROCESS_BRIDGE`)**:
-   - Bridges your active Steam game to Discord's native local process detector. Consumes 0% CPU and zero resources.
-   - Enables Discord's native **Playtime Hours tracking**, **"Recently Played" (last 30 days) activity history**, and Discord's new **Game Time Badges, Game Variety Badges & Streaks**.
-   - *macOS Note*: Native Mac Steam games are detected automatically. For Windows-only titles (like CS2), open Discord Settings → Registered Games → click *"Not seeing your game? Add it!"* once while the game is running to link it. Discord remembers it permanently.
 
 #### 🎨 Tab 3: Cover Art & Local Games
 Advanced artwork and process monitoring settings:

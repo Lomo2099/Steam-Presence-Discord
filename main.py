@@ -50,12 +50,6 @@ except:
         
         print("\npackages installed and imported successfully!")
 
-try:
-    from process_bridge import ProcessBridge
-    bridge = ProcessBridge()
-except Exception as e:
-    bridge = None
-
 # just shorthand for logs and errors - easier to write in script
 def log(log):
     print(f"[{datetime.now().strftime('%b %d %Y - %H:%M:%S')}] {log}")
@@ -124,7 +118,6 @@ def getConfigFile():
         "FETCH_STEAM_REVIEWS": False,
         "ADD_STEAM_STORE_BUTTON": False,
         "STEAM_STORE_REGION": "us",
-        "ENABLE_PROCESS_BRIDGE": True,
         
         "WEB_SCRAPE": False,
         
@@ -1175,7 +1168,6 @@ def main():
         doCustomGame = config["GAME_OVERWRITE"]["ENABLED"]
         customGameName = config["GAME_OVERWRITE"]["NAME"]
         customGameStartOffset = config["GAME_OVERWRITE"]["SECONDS_SINCE_START"]
-        enableProcessBridge = config.get("ENABLE_PROCESS_BRIDGE", True)
 
 
         # set the custom game
@@ -1222,8 +1214,6 @@ def main():
                     print("----------------------------------------------------------")
                     RPC.clear()
                     RPC.close()
-                    if bridge:
-                        bridge.stop()
                     
                     # set previous game name to "", this is used to check if the game has changed
                     # if we don't use this and the user opens a game, closes it, and then relaunches it - the script won't detect that
@@ -1257,8 +1247,6 @@ def main():
                     log(f"RPC for {previousGameName} still open, closing it")
                     RPC.clear()
                     RPC.close()
-                    if bridge:
-                        bridge.stop()
                     
                 # redefine and reconnect to the RPC object
                 log(f"creating new rich presence object for {gameName}")
@@ -1270,8 +1258,6 @@ def main():
                 
                 isPlaying = True
                 previousGameName = gameName
-                if bridge and enableProcessBridge:
-                    bridge.start(gameName)
                 
                 print("----------------------------------------------------------")
         
