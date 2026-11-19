@@ -132,6 +132,9 @@ cat <<'EOF' > launch_gui.sh
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
+echo "=========================================="
+echo "   🎮 Launching Steam Presence GUI...     "
+echo "=========================================="
 exec "$DIR/venv/bin/python" "$DIR/gui.py" "$@"
 EOF
 chmod +x launch_gui.sh
@@ -142,7 +145,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
-exec "$DIR/venv/bin/python" "$DIR/gui.py"
+echo "=========================================="
+echo "   🎮 Launching Steam Presence GUI...     "
+echo "=========================================="
+echo "Opening interface. The window will appear on your screen."
+echo ""
+exec "$DIR/venv/bin/python" "$DIR/gui.py" "$@"
 EOF
     chmod +x "Steam Presence.command"
     echo "✓ Created macOS double-clickable app launcher: 'Steam Presence.command'"

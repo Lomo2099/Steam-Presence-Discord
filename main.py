@@ -61,7 +61,7 @@ def error(error):
 # this just seems to sometimes happens if your network conection is a bit wack, this function is a replacement for requests.get() and basically just does error handling and stuff
 def makeWebRequest(URL, loops=0):
     try:
-        r = requests.get(URL)
+        r = requests.get(URL, timeout=8)
         return r
     except Exception as e:
         if loops > 10:
@@ -973,7 +973,7 @@ def verifyProjectVersion():
 def checkForUpdate():
     URL = f"https://api.github.com/repos/JustTemmie/steam-presence/releases/latest"
     try:
-        r = requests.get(URL)
+        r = requests.get(URL, timeout=4)
     except Exception as e:
         error(f"failed to check if a newer version is available, falling back...\nfull error: {e}")
         return
@@ -1141,8 +1141,10 @@ def main():
 
     # everything ready! 
     log("everything is ready!")
+    log(f"monitoring Steam user(s): {userID} (checking every 30s for active game...)")
     print("----------------------------------------------------------")
     
+    idle_reported = False
     while True:
         # these values are taken from the config file every cycle, so the user can change these whilst the script is running
         config = getConfigFile()
@@ -1183,6 +1185,13 @@ def main():
         
             if doSteamRichPresence and isPlayingSteamGame:
                 getSteamRichPresence()        
+            
+        if gameName == "":
+            if not isPlaying and not idle_reported:
+                log("status: Idle - No active game detected on Steam. Launch a game on Steam to update Discord.")
+                idle_reported = True
+        else:
+            idle_reported = False        
             
             
         # if the game has changed

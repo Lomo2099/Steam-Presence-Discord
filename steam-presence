@@ -1,3 +1,7 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-exec "$DIR/venv/bin/python" "$DIR/main.py"
+cd "$DIR"
+echo "=========================================="
+echo "   🎮 Launching Steam Presence...         "
+echo "=========================================="
+exec "$DIR/venv/bin/python" "$DIR/main.py" "$@"

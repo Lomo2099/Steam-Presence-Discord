@@ -263,6 +263,21 @@ class SteamPresenceGUI:
         self.root.after(100, self._process_log_queue)
         self.root.protocol("WM_DELETE_WINDOW", self._on_closing)
 
+        # Bring window to front and focus on macOS
+        self.root.lift()
+        self.root.attributes("-topmost", True)
+        self.root.after_idle(self.root.attributes, "-topmost", False)
+        self.root.focus_force()
+
+        if sys.platform == "darwin":
+            try:
+                subprocess.Popen(
+                    ["osascript", "-e", f'tell application "System Events" to set frontmost of first process whose unix id is {os.getpid()} to true'],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                )
+            except Exception:
+                pass
+
     def _init_ttk_styles(self):
         style = ttk.Style()
         try:
@@ -1494,6 +1509,7 @@ class SteamPresenceGUI:
 
             self.active_pid = self.process.pid
             self.var_status_indicator.set(f"🟢 Running (PID {self.active_pid})")
+            self.var_status_game.set("Detecting...")
             self.lbl_proc_status.config(fg=self.colors["success"])
             self.btn_start.config(state="disabled")
             self.btn_stop.config(state="normal")
@@ -1521,6 +1537,7 @@ class SteamPresenceGUI:
 
     def stop_process(self):
         """Stops the running main.py process."""
+        self.var_status_game.set("None (Stopped)")
         if self.process is None or self.process.poll() is not None:
             self.var_status_indicator.set("🔴 Stopped")
             self.lbl_proc_status.config(fg=self.colors["danger"])
@@ -1548,6 +1565,7 @@ class SteamPresenceGUI:
     def restart_process(self):
         """Restarts the running process."""
         self._append_log("Restarting Steam Presence...", "info")
+        self.var_status_game.set("Restarting...")
         if self.process is not None and self.process.poll() is None:
             self.stop_process()
             self.root.after(1200, self.start_process)
@@ -1566,6 +1584,7 @@ class SteamPresenceGUI:
                 self.process = None
                 self.active_pid = None
                 self.var_status_indicator.set("🔴 Stopped")
+                self.var_status_game.set("None (Stopped)")
                 self.lbl_proc_status.config(fg=self.colors["danger"])
                 self.btn_start.config(state="normal")
                 self.btn_stop.config(state="disabled")
@@ -1581,28 +1600,40 @@ class SteamPresenceGUI:
 
         self.log_text.insert(tk.END, f"[{now}] ", "timestamp")
 
-        if "found game" in text or "game changed, updating to" in text:
+        if "no longer playing" in text or "closing previous rich presence" in text:
+            self.var_status_game.set("Idle")
+        elif "game changed, updating to" in text:
             tag = "game"
             try:
-                if "'" in text:
-                    g_name = text.split("'")[1]
-                    self.var_status_game.set(g_name)
-                elif "found game" in text:
-                    g_name = text.split("found game")[1].split("played by")[0].strip()
+                g_name = text.split("game changed, updating to")[1].strip().strip("'\"")
+                if g_name:
                     self.var_status_game.set(g_name)
             except Exception:
                 pass
-        elif "ERROR:" in text or kind == "error":
-            tag = "error"
-        elif "success" in text.lower() or kind == "success":
-            tag = "success"
-        elif kind == "info":
-            tag = "info"
-        else:
-            tag = "info" if kind == "info" else ""
-
-        self.log_text.insert(tk.END, f"{text}\n", tag if tag else None)
-        self.log_text.see(tk.END)
+        elif "found game" in text and "played by" in text:
+            tag = "game"
+            try:
+                g_name = text.split("found game")[1].split("played by")[0].strip().strip("'\"")
+                if g_name:
+                    self.var_status_game.set(g_name)
+            except Exception:
+                pass
+        elif "using custom game" in text:
+            tag = "game"
+            try:
+                g_name = text.split("using custom game")[1].strip().strip("'\"")
+                if g_name:
+                    self.var_status_game.set(g_name)
+            except Exception:
+                pass
+        elif "found name for" in text and "on disk" in text:
+            tag = "game"
+            try:
+                g_name = text.split("found name for")[1].split("on disk")[0].strip().strip("'\"")
+                if g_name:
+                    self.var_status_game.set(g_name)
+            except Exception:
+                pass
 
     def _clear_logs(self):
         self.log_text.delete("1.0", tk.END)
@@ -1627,6 +1658,10 @@ def main():
         print("Validation successful.")
         sys.exit(0)
 
+    print("==========================================")
+    print("   🎮 Steam Presence GUI Started          ")
+    print("==========================================")
+    print("GUI window opened. (Close the GUI window to exit)")
     root = tk.Tk()
     app = SteamPresenceGUI(root)
     root.mainloop()
